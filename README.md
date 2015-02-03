@@ -1,4 +1,1 @@
-rtl
-===
-
-RANSAC Template Library
+## RTL: RANSAC Template Library
