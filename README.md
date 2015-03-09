@@ -1,1 +1,1 @@
-## RTL: RANSAC Template Library
+## RTL: RANSAC Template Library for C++
