@@ -23,9 +23,17 @@ public:
 
     RANSAC(Estimator<Model, ModelSet, Datum, Data>* estimator);
 
+    bool SetParamIteration(int iteration = 100) { paramIteration = iteration; return true; }
+
+    int GetParamIteration(void) { return paramIteration; }
+
+    bool SetParamThreshold(double threshold = 1) { paramThreshold = threshold; return true; }
+
+    int GetParamThreshold(void) { return paramThreshold; }
+
     virtual double FindBest(Model& best, const Data& data, int N);
 
-    virtual int FindInliers(std::vector<int>& inliers, const Model& model, const Data& data);
+    virtual int FindInliers(std::vector<int>& inliers, const Model& model, const Data& data, int N);
 
 protected:
     virtual inline bool IsContinued(int iteration);
@@ -42,7 +50,7 @@ protected:
 
     Estimator<Model, ModelSet, Datum, Data>* toolEstimator;
 
-    int paramMaxIteration;
+    int paramIteration;
 
     double paramThreshold;
 };
@@ -53,14 +61,19 @@ RANSAC<Model, ModelSet, Datum, Data>::RANSAC(Estimator<Model, ModelSet, Datum, D
     assert(estimator != NULL);
 
     toolEstimator = estimator;
-    paramMaxIteration = 100;
-    paramThreshold = 1;
+    SetParamIteration();
+    SetParamThreshold();
 }
 
 template <class Model, class ModelSet, class Datum, class Data>
-int RANSAC<Model, ModelSet, Datum, Data>::FindInliers(std::vector<int>& inliers, const Model& model, const Data& data)
+int RANSAC<Model, ModelSet, Datum, Data>::FindInliers(std::vector<int>& inliers, const Model& model, const Data& data, int N)
 {
-    return 0;
+    for (int i = 0; i < N; i++)
+    {
+        double error = toolEstimator->ComputeError(model, data[i]);
+        if (fabs(error) > paramThreshold) inliers.push_back(i);
+    }
+    return static_cast<int>(inliers.size());
 }
 
 template <class Model, class ModelSet, class Datum, class Data>
@@ -94,7 +107,7 @@ RANSAC_FIND_BEST_EXIT:
 template <class Model, class ModelSet, class Datum, class Data>
 bool RANSAC<Model, ModelSet, Datum, Data>::IsContinued(int iteration)
 {
-    return (iteration < paramMaxIteration);
+    return (iteration < paramIteration);
 }
 
 template <class Model, class ModelSet, class Datum, class Data>
