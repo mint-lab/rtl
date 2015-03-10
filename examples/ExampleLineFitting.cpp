@@ -21,7 +21,7 @@ int main(void)
     Line bestModel;
     double bestLoss = ransac.FindBest(bestModel, data, data.size());
 
-    // Find inliers using RANSAC
+    // Find inliers using the best model
     std::vector<int> inliers;
     int numInliers = ransac.FindInliers(inliers, bestModel, data, data.size());
 

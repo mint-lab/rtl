@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleLine", "ExampleLine/ExampleLine.vcproj", "{C6DAC20C-B706-4882-B112-8E336FB24FE7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleLineFitting", "ExampleLineFitting/ExampleLineFitting.vcproj", "{C6DAC20C-B706-4882-B112-8E336FB24FE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

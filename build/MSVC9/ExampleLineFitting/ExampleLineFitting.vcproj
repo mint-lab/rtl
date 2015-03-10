@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="ExampleLine"
+	Name="ExampleLineFitting"
 	ProjectGUID="{C6DAC20C-B706-4882-B112-8E336FB24FE7}"
-	RootNamespace="ExampleLine"
+	RootNamespace="ExampleLineFitting"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -173,7 +173,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\examples\ExampleLine.cpp"
+				RelativePath="..\..\..\examples\ExampleLineFitting.cpp"
 				>
 			</File>
 		</Filter>
