@@ -1,4 +1,4 @@
-function [] = LinePlot(models, data, paramShape, paramLegend)
+function [] = LinePlot(models, data, paramLegend, paramShape)
 
 figure('Color', [1, 1, 1]);
 hold on;
@@ -14,7 +14,7 @@ hold on;
             lineX = [minData(1), maxData(1)];
             lineY = -(models(i,1) * lineX + models(i,3)) ./ models(i,2);
         end
-        if nargin >= 3
+        if nargin >= 4
             plot(lineX, lineY, paramShape{i}, 'LineWidth', 2);
         else
             plot(lineX, lineY, 'Color', rand(1,3), 'LineWidth', 2);
@@ -31,7 +31,7 @@ hold on;
     grid on;
     xlabel('X');
     ylabel('Y');
-    if nargin >=4
+    if nargin >= 3
         legend(paramLegend);
     end
 hold off;
