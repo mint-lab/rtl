@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleLineFitting", "ExampleLineFitting/ExampleLineFitting.vcproj", "{C6DAC20C-B706-4882-B112-8E336FB24FE7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleLineFitting", "ExampleLineFitting\ExampleLineFitting.vcproj", "{C6DAC20C-B706-4882-B112-8E336FB24FE7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EvaluteLineFitting", "EvaluateLineFitting\EvaluateLineFitting.vcproj", "{0C296CBC-4B1B-4181-804E-7D4542261748}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +15,10 @@ Global
 		{C6DAC20C-B706-4882-B112-8E336FB24FE7}.Debug|Win32.Build.0 = Debug|Win32
 		{C6DAC20C-B706-4882-B112-8E336FB24FE7}.Release|Win32.ActiveCfg = Release|Win32
 		{C6DAC20C-B706-4882-B112-8E336FB24FE7}.Release|Win32.Build.0 = Release|Win32
+		{0C296CBC-4B1B-4181-804E-7D4542261748}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0C296CBC-4B1B-4181-804E-7D4542261748}.Debug|Win32.Build.0 = Debug|Win32
+		{0C296CBC-4B1B-4181-804E-7D4542261748}.Release|Win32.ActiveCfg = Release|Win32
+		{0C296CBC-4B1B-4181-804E-7D4542261748}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

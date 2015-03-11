@@ -1,19 +1,19 @@
-#ifndef __RTL_LINE_2D__
-#define __RTL_LINE_2D__
+#ifndef __RTL_LINE__
+#define __RTL_LINE__
 
 #include "Base.hpp"
 #include <cmath>
 #include <limits>
 #include <random>
 
-class Point2
+class Point
 {
 public:
-    Point2() : x(0), y(0) { }
+    Point() : x(0), y(0) { }
     
-    Point2(double _x, double _y) : x(_x), y(_y) { }
+    Point(double _x, double _y) : x(_x), y(_y) { }
 
-    friend std::ostream& operator<<(std::ostream& out, const Point2& p) { return out << p.x << ", " << p.y; }
+    friend std::ostream& operator<<(std::ostream& out, const Point& p) { return out << p.x << ", " << p.y; }
 
     double x, y;
 };
@@ -30,7 +30,7 @@ public:
     double a, b, c;
 };
 
-class LineEstimator : public RTL::Estimator<Line, std::vector<Line>, Point2, std::vector<Point2> >
+class LineEstimator : public RTL::Estimator<Line, std::vector<Line>, Point, std::vector<Point> >
 {
 public:
     LineEstimator(size_t M = 2) : Estimator(M) { }
@@ -85,14 +85,14 @@ public:
     }
 }; // End of 'LineEstimator'
 
-class LineObserver : public RTL::Observer<Line, Point2, std::vector<Point2> >
+class LineObserver : public RTL::Observer<Line, Point, std::vector<Point> >
 {
 public:
-    LineObserver() : RANGE_MIN(Point2(0, 0)), RANGE_MAX(Point2(640, 480))
+    LineObserver() : RANGE_MIN(Point(0, 0)), RANGE_MAX(Point(640, 480))
     {
     }
 
-    LineObserver(Point2 _min, Point2 _max) : RANGE_MIN(_min), RANGE_MAX(_max) { }
+    LineObserver(Point _min, Point _max) : RANGE_MIN(_min), RANGE_MAX(_max) { }
 
     virtual bool GenerateData(Data& data, std::vector<int>& inliers, const Model& model, int N, double noise = 0, double ratio = 1)
     {
@@ -149,9 +149,9 @@ public:
         return true;
     }
 
-    const Point2 RANGE_MIN;
+    const Point RANGE_MIN;
 
-    const Point2 RANGE_MAX;
+    const Point RANGE_MAX;
 };
 
-#endif // End of '__RTL_LINE_2D__'
+#endif // End of '__RTL_LINE__'

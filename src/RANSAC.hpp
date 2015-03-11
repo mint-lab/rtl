@@ -2,9 +2,9 @@
 #define __RTL_RANSAC__
 
 #include "Base.hpp"
-#include <cassert>
-#include <ctime>
+#include <random>
 #include <cmath>
+#include <cassert>
 
 namespace RTL
 {
@@ -71,7 +71,7 @@ int RANSAC<Model, ModelSet, Datum, Data>::FindInliers(std::vector<int>& inliers,
     for (int i = 0; i < N; i++)
     {
         double error = toolEstimator->ComputeError(model, data[i]);
-        if (fabs(error) > paramThreshold) inliers.push_back(i);
+        if (fabs(error) < paramThreshold) inliers.push_back(i);
     }
     return static_cast<int>(inliers.size());
 }

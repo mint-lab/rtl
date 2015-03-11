@@ -2,11 +2,12 @@
 #include "Line.hpp"
 #include "RANSAC.hpp"
 
+// The main function
 int main(void)
 {
     // Generate noisy data from the truth
     LineObserver observer;
-    std::vector<Point2> data;
+    std::vector<Point> data;
     std::vector<int> trueInliers;
     Line trueModel(0.6, -0.8, 1);
     if (!observer.GenerateData(data, trueInliers, trueModel, 100, 0.1, 0.5)) return -1;
@@ -17,7 +18,7 @@ int main(void)
 
     // Find the best model using RANSAC
     LineEstimator estimator;
-    RTL::RANSAC<Line, std::vector<Line>, Point2, std::vector<Point2> > ransac(&estimator);
+    RTL::RANSAC<Line, std::vector<Line>, Point, std::vector<Point> > ransac(&estimator);
     Line bestModel;
     double bestLoss = ransac.FindBest(bestModel, data, data.size());
 
