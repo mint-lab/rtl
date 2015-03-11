@@ -58,6 +58,13 @@ for cr = 1:length(criteria)
                 plot(varValue, result{cr}(i,:), algoShape{i}, 'LineWidth', 2);
             end
         end
+        if cr == 2
+            axis([min(varValue), max(varValue), 0.8, 1.2]);
+        elseif cr == 3
+            axis([min(varValue), max(varValue), 0, 1]);
+        elseif cr == 4
+            axis([min(varValue), max(varValue), 0, 1]);
+        end
         box on;
         grid on;
         xlabel(varName);

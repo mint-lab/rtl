@@ -2,6 +2,7 @@
 #include <fstream>
 #include "RANSAC.hpp"
 #include "MSAC.hpp"
+#include "MLESAC.hpp"
 #include "Line.hpp"
 #include "Evaluator.hpp"
 
@@ -21,7 +22,7 @@ const ExpVar CONFIG_EXP_DEFAULT ( 200, 0.6, 0.5);
 const ExpVar CONFIG_EXP_MIN     ( 100, 0.2, 0.1);
 const ExpVar CONFIG_EXP_MAX     (1000, 2.0, 0.9);
 const ExpVar CONFIG_EXP_STEP    ( 100, 0.2, 0.1);
-const int    CONFIG_EXP_TRIAL = 1;
+const int    CONFIG_EXP_TRIAL = 1000;
 const char*  CONFIG_EXP_NAME1 = "LineRandom(DataNum).csv";
 const char*  CONFIG_EXP_NAME2 = "LineRandom(NoiseLevel).csv";
 const char*  CONFIG_EXP_NAME3 = "LineRandom(InlierRate).csv";
@@ -69,10 +70,10 @@ bool RunRandomExp(const char* output, AlgoPtr algoPtr[], int algoNum, LineEstima
                         // Write and print the results
                         // - Format: dataNum, noiseLevel, inlierRate, expTrial, algoIndex, compTime, NSSE, TP, FP, FN
                         record << var.dataNum << ", " << var.noiseLevel << ", " << var.inlierRate << ", " << trial << ", " << algoIndex << ", " << compTime << ", " << nsse << ", " << score.tp << ", " << score.fp << ", " << score.fn << std::endl;
-                        if (verbose)
-                            std::cout << var.dataNum << ", " << var.noiseLevel << ", " << var.inlierRate << ", " << trial << ", " << algoIndex << std::endl;
                     }
                 } // End of 'for (expTrial)'
+                if (verbose)
+                    std::cout << var.dataNum << ", " << var.noiseLevel << ", " << var.inlierRate << std::endl;
             } // End of 'for (expVar.inlierRate)'
         } // End of 'for (expVar.noiseLevel)'
     } // End of 'for (expVar.dataNum)'
@@ -90,10 +91,12 @@ int main(void)
     LineEstimator estimator;
     RTL::RANSAC<Line, std::vector<Line>, Point, std::vector<Point> > ransac(&estimator);
     RTL::MSAC<Line, std::vector<Line>, Point, std::vector<Point> > msac(&estimator);
+    RTL::MLESAC<Line, std::vector<Line>, Point, std::vector<Point> > mlesac(&estimator);
     AlgoPtr algorithms[] =
     {
         &ransac,
         &msac,
+        &mlesac,
     };
     const int ALGO_NUM = sizeof(algorithms) / sizeof(AlgoPtr);
 

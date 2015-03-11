@@ -23,11 +23,19 @@ public:
 
     RANSAC(Estimator<Model, ModelSet, Datum, Data>* estimator);
 
-    bool SetParamIteration(int iteration = 100) { paramIteration = iteration; return true; }
+    bool SetParamIteration(int iteration = 100)
+    {
+        paramIteration = iteration;
+        return true;
+    }
 
     int GetParamIteration(void) { return paramIteration; }
 
-    bool SetParamThreshold(double threshold = 1) { paramThreshold = threshold; return true; }
+    bool SetParamThreshold(double threshold = 1)
+    {
+        paramThreshold = threshold;
+        return true;
+    }
 
     int GetParamThreshold(void) { return paramThreshold; }
 
@@ -43,6 +51,10 @@ protected:
     virtual inline double EvaluateModel(const Model& model, const Data& data, int N);
 
     virtual inline bool UpdateBest(Model& bestModel, double& bestCost, const Model& model, double cost);
+
+    virtual inline void Initialize(const Data& data, int N) { toolUniform = std::tr1::uniform_int<int>(0, N - 1); }
+
+    virtual inline void Terminate(const Data& data, int N, const Model& bestModel) { }
 
     std::tr1::mt19937 toolGenerator;
 
@@ -79,8 +91,9 @@ int RANSAC<Model, ModelSet, Datum, Data>::FindInliers(std::vector<int>& inliers,
 template <class Model, class ModelSet, class Datum, class Data>
 double RANSAC<Model, ModelSet, Datum, Data>::FindBest(Model& best, const Data& data, int N)
 {
-    toolUniform = std::tr1::uniform_int<int>(0, N - 1);
+    Initialize(data, N);
 
+    // Run RANSAC
     double bestloss = HUGE_VAL;
     int iteration = 0;
     while (IsContinued(iteration))
@@ -100,7 +113,9 @@ double RANSAC<Model, ModelSet, Datum, Data>::FindBest(Model& best, const Data& d
                     goto RANSAC_FIND_BEST_EXIT;
         }
     }
+
 RANSAC_FIND_BEST_EXIT:
+    Terminate(data, N, best);
     return bestloss;
 }
 

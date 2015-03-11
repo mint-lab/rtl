@@ -195,6 +195,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\MLESAC.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\MSAC.hpp"
 				>
 			</File>
