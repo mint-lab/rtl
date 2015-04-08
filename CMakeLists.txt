@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 2.6)
+project(rtl)
+
+set(RTL_OUTPUT_LIB_DIR ${RTL_BINARY_DIR}/lib)
+set(RTL_OUTPUT_BIN_DIR ${RTL_BINARY_DIR}/bin)
+
+
+
+make_directory(${RTL_OUTPUT_LIB_DIR})
+make_directory(${RTL_OUTPUT_BIN_DIR})
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${RTL_OUTPUT_LIB_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${RTL_OUTPUT_BIN_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${RTL_OUTPUT_LIB_DIR}")
+
+
+add_subdirectory(examples)
+
