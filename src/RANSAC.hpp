@@ -35,6 +35,8 @@ public:
 
     virtual int FindInliers(std::vector<int>& inliers, const Model& model, const Data& data, int N);
 
+    virtual int FindInliers(std::vector<bool>& inliers, const Model& model, const Data& data, int N);
+
 protected:
     virtual inline bool IsContinued(int iteration);
 
@@ -74,6 +76,23 @@ int RANSAC<Model, ModelSet, Datum, Data>::FindInliers(std::vector<int>& inliers,
         if (fabs(error) < paramThreshold) inliers.push_back(i);
     }
     return static_cast<int>(inliers.size());
+}
+
+template <class Model, class ModelSet, class Datum, class Data>
+int RANSAC<Model, ModelSet, Datum, Data>::FindInliers(std::vector<bool>& inliers, const Model& model, const Data& data, int N)
+{
+	int k = 0;
+    for (int i = 0; i < N; i++)
+    {
+        double error = toolEstimator->ComputeError(model, data[i]);
+        if (fabs(error) < paramThreshold) {
+			inliers.push_back(true);
+			++k;
+		} else {
+			inliers.push_back(false);
+		}
+    }
+    return static_cast<int>(k);
 }
 
 template <class Model, class ModelSet, class Datum, class Data>
