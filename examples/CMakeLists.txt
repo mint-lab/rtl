@@ -1,6 +1,4 @@
 
-
-
 MESSAGE( STATUS "RTL DIRECTORY:  " ${RTL_OUTPUT_LIB_DIR})
 
 include_directories(${CMAKE_SOURCE_DIR}/src)

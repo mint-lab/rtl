@@ -3,9 +3,7 @@
 
 #include "Base.hpp"
 #include <algorithm>
-#ifdef _WIN32
-#   include <windows.h>
-#endif
+#include <chrono>
 
 class Score
 {
@@ -21,18 +19,10 @@ public:
     int fn;
 };
 
-template <class ModelT, class ModelSetT, class DatumT, class DataT>
+template <class Model, class ModelSet, class Datum, class Data>
 class Evaluator
 {
 public:
-    typedef ModelT                      Model;
-
-    typedef ModelSetT                   ModelSet;
-
-    typedef DatumT                      Datum;
-
-    typedef DataT                       Data;
-
     Evaluator(RTL::Estimator<Model, ModelSet, Datum, Data>* estimator)
     {
         assert(estimator != NULL);
@@ -102,31 +92,27 @@ protected:
 
 class StopWatch
 {
-public:
-    StopWatch()
-    {
-        ::QueryPerformanceFrequency((LARGE_INTEGER*)&freq);
-        ::QueryPerformanceCounter((LARGE_INTEGER*)&start);
-    }
+    public:
+        StopWatch()
+        {
+        }
 
-    bool Start(void)
-    {
-        ::QueryPerformanceCounter((LARGE_INTEGER*)&start);
-        return true;
-    }
+        bool Start(void)
+        {
+            start = std::chrono::high_resolution_clock::now();
+            return true;
+        }
 
-    double GetElapse(void)
-    {
-        assert(freq.QuadPart != 0);
-        LARGE_INTEGER finish;
-        ::QueryPerformanceCounter((LARGE_INTEGER*)&finish);
-        return (static_cast<double>(finish.QuadPart - start.QuadPart) / freq.QuadPart);
-    }
+        double GetElapse(void)
+        {
+            std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
 
-private:
-    LARGE_INTEGER freq;
+            return static_cast<double>(time_span.count());
+        }
 
-    LARGE_INTEGER start;
+    private:
+        std::chrono::high_resolution_clock::time_point start;
 };
 
 #endif // End of '__RTL_EVALUATOR__'

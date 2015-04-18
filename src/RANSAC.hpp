@@ -9,18 +9,10 @@
 namespace RTL
 {
 
-template <class ModelT, class ModelSetT, class DatumT, class DataT>
+template <class Model, class ModelSet, class Datum, class Data>
 class RANSAC
 {
 public:
-    typedef ModelT                      Model;
-
-    typedef ModelSetT                   ModelSet;
-
-    typedef DatumT                      Datum;
-
-    typedef DataT                       Data;
-
     RANSAC(Estimator<Model, ModelSet, Datum, Data>* estimator);
 
     bool SetParamIteration(int iteration = 100) { paramIteration = iteration; return true; }
@@ -44,9 +36,9 @@ protected:
 
     virtual inline bool UpdateBest(Model& bestModel, double& bestCost, const Model& model, double cost);
 
-    std::tr1::mt19937 toolGenerator;
+    std::mt19937 toolGenerator;
 
-    std::tr1::uniform_int<int> toolUniform;
+    std::uniform_int_distribution<int> toolUniform;
 
     Estimator<Model, ModelSet, Datum, Data>* toolEstimator;
 
@@ -79,7 +71,7 @@ int RANSAC<Model, ModelSet, Datum, Data>::FindInliers(std::vector<int>& inliers,
 template <class Model, class ModelSet, class Datum, class Data>
 double RANSAC<Model, ModelSet, Datum, Data>::FindBest(Model& best, const Data& data, int N)
 {
-    toolUniform = std::tr1::uniform_int<int>(0, N - 1);
+    toolUniform = std::uniform_int_distribution<int>(0, N - 1);
 
     double bestloss = HUGE_VAL;
     int iteration = 0;

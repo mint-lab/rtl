@@ -6,10 +6,11 @@
 namespace RTL
 {
 
-template <class ModelT, class ModelSetT, class DatumT, class DataT>
-class MSAC : public RANSAC<ModelT, ModelSetT, DatumT, DataT>
+template <class Model, class ModelSet, class Datum, class Data>
+class MSAC : public virtual RANSAC<Model, ModelSet, Datum, Data>
 {
 public:
+
     MSAC(Estimator<Model, ModelSet, Datum, Data>* estimator): RANSAC<Model, ModelSet, Datum, Data>(estimator) { }
 
 protected:
@@ -18,8 +19,8 @@ protected:
         double loss = 0;
         for (int i = 0; i < N; i++)
         {
-            double error = toolEstimator->ComputeError(model, data[i]);
-            if (error > paramThreshold || error < -paramThreshold) loss += paramThreshold * paramThreshold;
+            double error = this->toolEstimator->ComputeError(model, data[i]);
+            if (error > this->paramThreshold || error < -this->paramThreshold) loss += this->paramThreshold * this->paramThreshold;
             else loss += error * error;
         }
         return loss;
