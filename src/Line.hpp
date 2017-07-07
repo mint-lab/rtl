@@ -149,6 +149,63 @@ public:
         return true;
     }
 
+    virtual bool GenerateData(Data& data, std::vector<bool>& inliers, const Model& model, int N, double noise = 0, double ratio = 1)
+    {
+        std::tr1::mt19937 generator;
+        std::tr1::uniform_real<double> uniform(0, 1);
+        std::tr1::normal_distribution<double> normal(0, 1);
+
+        if (fabs(model.b) > DBL_EPSILON)
+        {
+            for (int i = 0; i < N; i++)
+            {
+                Datum datum;
+                datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) - RANGE_MIN.x;
+                double vote = uniform(generator);
+                if (vote > ratio)
+                {
+                    // Generate an outlier
+                    datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) - RANGE_MIN.y;
+                    inliers.push_back(false);
+                }
+                else
+                {
+                    // Generate an inlier
+                    datum.y = (model.a * datum.x + model.c) / -model.b;
+                    datum.x += noise * normal(generator);
+                    datum.y += noise * normal(generator);
+                    inliers.push_back(true);
+                }
+                data.push_back(datum);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < N; i++)
+            {
+                Datum datum;
+                datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) - RANGE_MIN.y;
+                double vote = uniform(generator);
+                if (vote > ratio)
+                {
+                    // Generate an outlier
+                    datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) - RANGE_MIN.x;
+                    inliers.push_back(false);
+                }
+                else
+                {
+                    // Generate an inlier
+                    datum.x = (model.b * datum.y + model.c) / -model.a;
+                    datum.x += noise * normal(generator);
+                    datum.y += noise * normal(generator);
+                    inliers.push_back(true);
+                }
+                data.push_back(datum);
+            }
+        }
+        return true;
+    }
+
     const Point RANGE_MIN;
 
     const Point RANGE_MAX;
