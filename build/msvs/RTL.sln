@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleLineFitting", "Examp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EvaluateLineFitting", "EvaluateLineFitting\EvaluateLineFitting.vcxproj", "{6FD9D438-A0B5-4606-B56F-DD76E952740C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleMean", "ExampleMean\ExampleMean.vcxproj", "{C999F189-8BFA-4174-A061-0545BD6F13A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,6 +23,10 @@ Global
 		{6FD9D438-A0B5-4606-B56F-DD76E952740C}.Debug|Win32.Build.0 = Debug|Win32
 		{6FD9D438-A0B5-4606-B56F-DD76E952740C}.Release|Win32.ActiveCfg = Release|Win32
 		{6FD9D438-A0B5-4606-B56F-DD76E952740C}.Release|Win32.Build.0 = Release|Win32
+		{C999F189-8BFA-4174-A061-0545BD6F13A7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C999F189-8BFA-4174-A061-0545BD6F13A7}.Debug|Win32.Build.0 = Debug|Win32
+		{C999F189-8BFA-4174-A061-0545BD6F13A7}.Release|Win32.ActiveCfg = Release|Win32
+		{C999F189-8BFA-4174-A061-0545BD6F13A7}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

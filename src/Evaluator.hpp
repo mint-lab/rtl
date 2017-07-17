@@ -23,26 +23,24 @@ public:
     int fn;
 };
 
-template <class ModelT, class ModelSetT, class DatumT, class DataT>
+template <class ModelT, class DatumT, class DataT>
 class Evaluator
 {
 public:
     typedef ModelT                      Model;
 
-    typedef ModelSetT                   ModelSet;
-
     typedef DatumT                      Datum;
 
     typedef DataT                       Data;
 
-    Evaluator(RTL::Estimator<Model, ModelSet, Datum, Data>* estimator)
+    Evaluator(RTL::Estimator<Model, Datum, Data>* estimator)
     {
         assert(estimator != NULL);
         toolEstimator = estimator;
         trueSSE = -1;
     }
 
-    bool SetGroundTruth(const Data& data, const std::vector<int> inliers, const Model& model, int N)
+    bool SetGroundTruth(const Model& model, const Data& data, int N, const std::vector<int> inliers)
     {
         trueModel = model;
         trueInliers = inliers;
@@ -91,7 +89,7 @@ public:
     }
 
 protected:
-    RTL::Estimator<Model, ModelSet, Datum, Data>* toolEstimator;
+    RTL::Estimator<Model, Datum, Data>* toolEstimator;
 
     Model trueModel;
 

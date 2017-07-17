@@ -10,19 +10,27 @@
 namespace RTL
 {
 
-template <class ModelT, class ModelSetT, class DatumT, class DataT>
-class MLESAC : public MSAC<ModelT, ModelSetT, DatumT, DataT>
+template <class ModelT, class DatumT, class DataT>
+class MLESAC : public MSAC<ModelT, DatumT, DataT>
 {
 public:
-    MLESAC(Estimator<Model, ModelSet, Datum, Data>* estimator) : MSAC<Model, ModelSet, Datum, Data>(estimator)
+    MLESAC(Estimator<Model, Datum, Data>* estimator) : MSAC<Model, Datum, Data>(estimator)
     {
         dataError2 = NULL;
-        paramIterationEM = 5;
-        paramSigmaScale = 1.96;
+        SetParamIterationEM();
+        SetParamSigmaScale();
     }
 
+    void SetParamIterationEM(int iteration = 5) { paramIterationEM = iteration; }
+
+    int GetParamIterationEM(void) { return paramIterationEM; }
+
+    void SetParamSigmaScale(double scale = 1.96) { paramSigmaScale = scale; }
+
+    double GetParamSigmaScale(void) { return paramSigmaScale; }
+
 protected:
-    virtual inline void Initialize(const Data& data, int N)
+    virtual void Initialize(const Data& data, int N)
     {
         MSAC::Initialize(data, N);
         dataError2 = new double[N];
@@ -31,9 +39,9 @@ protected:
         dataSigma2 = sigma * sigma;
     }
 
-    virtual inline double EvaluateModel(const Model& model, const Data& data, int N)
+    virtual double EvaluateModel(const Model& model, const Data& data, int N)
     {
-        // Calculate squared error
+        // Calculate squared errors
         double minError = HUGE_VAL, maxError = -HUGE_VAL;
         for (int i = 0; i < N; i++)
         {
@@ -71,14 +79,14 @@ protected:
         return sumLogLikelihood;
     }
 
-    virtual inline void Terminate(const Data& data, int N, const Model& bestModel)
+    virtual void Terminate(const Data& data, int N, const Model& bestModel)
     {
         if (dataError2 != NULL)
         {
             delete [] dataError2;
             dataError2 = NULL;
         }
-        MSAC::Terminate(data, N, bestModel);
+        MSAC::Terminate(bestModel, data, N);
     }
 
     int paramIterationEM;

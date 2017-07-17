@@ -6,11 +6,11 @@
 namespace RTL
 {
 
-template <class ModelT, class ModelSetT, class DatumT, class DataT>
-class MSAC : public RANSAC<ModelT, ModelSetT, DatumT, DataT>
+template <class ModelT, class DatumT, class DataT>
+class MSAC : public RANSAC<ModelT, DatumT, DataT>
 {
 public:
-    MSAC(Estimator<Model, ModelSet, Datum, Data>* estimator) : RANSAC<Model, ModelSet, Datum, Data>(estimator) { }
+    MSAC(Estimator<Model, Datum, Data>* estimator) : RANSAC<Model, Datum, Data>(estimator) { }
 
 protected:
     virtual inline double EvaluateModel(const Model& model, const Data& data, int N)

@@ -9,169 +9,117 @@
 namespace RTL
 {
 
-template <class ModelT, class ModelSetT, class DatumT, class DataT>
+template <class ModelT, class DatumT, class DataT>
 class RANSAC
 {
 public:
     typedef ModelT                      Model;
 
-    typedef ModelSetT                   ModelSet;
-
     typedef DatumT                      Datum;
 
     typedef DataT                       Data;
 
-    RANSAC(Estimator<Model, ModelSet, Datum, Data>* estimator);
-
-    bool SetParamIteration(int iteration = 100)
+    RANSAC(Estimator<Model, Datum, Data>* estimator)
     {
-        paramIteration = iteration;
-        return true;
+        assert(estimator != NULL);
+
+        toolEstimator = estimator;
+        SetParamIteration();
+        SetParamThreshold();
     }
+
+    virtual double FindBest(Model& best, const Data& data, int N, int M)
+    {
+        assert(N > 0 && M > 0);
+
+        Initialize(data, N);
+
+        // Run RANSAC
+        double bestloss = HUGE_VAL;
+        int iteration = 0;
+        while (IsContinued(iteration))
+        {
+            iteration++;
+
+            // 1. Generate hypotheses
+            Model model = GenerateModel(data, M);
+
+            // 2. Evaluate the hypotheses
+            double loss = EvaluateModel(model, data, N);
+            if (loss < bestloss)
+                if (!UpdateBest(best, bestloss, model, loss))
+                    goto RANSAC_FIND_BEST_EXIT;
+        }
+
+RANSAC_FIND_BEST_EXIT:
+        Terminate(best, data, N);
+        return bestloss;
+    }
+
+    virtual std::vector<int> FindInliers(const Model& model, const Data& data, int N)
+    {
+        std::vector<int> inliers;
+        for (int i = 0; i < N; i++)
+        {
+            double error = toolEstimator->ComputeError(model, data[i]);
+            if (fabs(error) < paramThreshold) inliers.push_back(i);
+        }
+        return inliers;
+    }
+
+    void SetParamIteration(int iteration = 100) { paramIteration = iteration; }
 
     int GetParamIteration(void) { return paramIteration; }
 
-    bool SetParamThreshold(double threshold = 1)
-    {
-        paramThreshold = threshold;
-        return true;
-    }
+    void SetParamThreshold(double threshold = 1) { paramThreshold = threshold; }
 
     int GetParamThreshold(void) { return paramThreshold; }
 
-    virtual double FindBest(Model& best, const Data& data, int N);
-
-    virtual int FindInliers(std::vector<int>& inliers, const Model& model, const Data& data, int N);
-
-    virtual int FindInliers(std::vector<bool>& inliers, const Model& model, const Data& data, int N);
-
 protected:
-    virtual inline bool IsContinued(int iteration);
+    virtual bool IsContinued(int iteration) { return (iteration < paramIteration); }
 
-    virtual inline int GenerateModel(ModelSet& models, const Data& data);
+    virtual Model GenerateModel(const Data& data, int M)
+    {
+        std::set<int> samples;
+        while (static_cast<int>(samples.size()) < M)
+            samples.insert(toolUniform(toolGenerator));
+        return toolEstimator->ComputeModel(data, samples);
+    }
 
-    virtual inline double EvaluateModel(const Model& model, const Data& data, int N);
+    virtual double EvaluateModel(const Model& model, const Data& data, int N)
+    {
+        double loss = 0;
+        for (int i = 0; i < N; i++)
+        {
+            double error = toolEstimator->ComputeError(model, data[i]);
+            loss += (fabs(error) > paramThreshold);
+        }
+        return loss;
+    }
 
-    virtual inline bool UpdateBest(Model& bestModel, double& bestCost, const Model& model, double cost);
+    virtual bool UpdateBest(Model& bestModel, double& bestCost, const Model& model, double cost)
+    {
+        bestModel = model;
+        bestCost = cost;
+        return true;
+    }
 
-    virtual inline void Initialize(const Data& data, int N) { toolUniform = std::uniform_int<int>(0, N - 1); }
+    virtual void Initialize(const Data& data, int N) { toolUniform = std::uniform_int<int>(0, N - 1); }
 
-    virtual inline void Terminate(const Data& data, int N, const Model& bestModel) { }
+    virtual void Terminate(const Model& bestModel, const Data& data, int N) { }
 
     std::mt19937 toolGenerator;
 
     std::uniform_int<int> toolUniform;
 
-    Estimator<Model, ModelSet, Datum, Data>* toolEstimator;
+    Estimator<Model, Datum, Data>* toolEstimator;
+
+    int paramSampleSize;
 
     int paramIteration;
 
     double paramThreshold;
-};
-
-template <class Model, class ModelSet, class Datum, class Data>
-RANSAC<Model, ModelSet, Datum, Data>::RANSAC(Estimator<Model, ModelSet, Datum, Data>* estimator)
-{
-    assert(estimator != NULL);
-
-    toolEstimator = estimator;
-    SetParamIteration();
-    SetParamThreshold();
-}
-
-template <class Model, class ModelSet, class Datum, class Data>
-int RANSAC<Model, ModelSet, Datum, Data>::FindInliers(std::vector<int>& inliers, const Model& model, const Data& data, int N)
-{
-    for (int i = 0; i < N; i++)
-    {
-        double error = toolEstimator->ComputeError(model, data[i]);
-        if (fabs(error) < paramThreshold) inliers.push_back(i);
-    }
-    return static_cast<int>(inliers.size());
-}
-
-template <class Model, class ModelSet, class Datum, class Data>
-int RANSAC<Model, ModelSet, Datum, Data>::FindInliers(std::vector<bool>& inliers, const Model& model, const Data& data, int N)
-{
-	int k = 0;
-    for (int i = 0; i < N; i++)
-    {
-        double error = toolEstimator->ComputeError(model, data[i]);
-        if (fabs(error) < paramThreshold) {
-			inliers.push_back(true);
-			++k;
-		} else {
-			inliers.push_back(false);
-		}
-    }
-    return static_cast<int>(k);
-}
-
-template <class Model, class ModelSet, class Datum, class Data>
-double RANSAC<Model, ModelSet, Datum, Data>::FindBest(Model& best, const Data& data, int N)
-{
-    Initialize(data, N);
-
-    // Run RANSAC
-    double bestloss = HUGE_VAL;
-    int iteration = 0;
-    while (IsContinued(iteration))
-    {
-        iteration++;
-
-        // 1. Generate hypotheses
-        ModelSet models;
-        int num = GenerateModel(models, data);
-
-        // 2. Evaluate the hypotheses
-        for (int i = 0; i < num; i++)
-        {
-            double loss = EvaluateModel(models[i], data, N);
-            if (loss < bestloss)
-                if (!UpdateBest(best, bestloss, models[i], loss))
-                    goto RANSAC_FIND_BEST_EXIT;
-        }
-    }
-
-RANSAC_FIND_BEST_EXIT:
-    Terminate(data, N, best);
-    return bestloss;
-}
-
-template <class Model, class ModelSet, class Datum, class Data>
-bool RANSAC<Model, ModelSet, Datum, Data>::IsContinued(int iteration)
-{
-    return (iteration < paramIteration);
-}
-
-template <class Model, class ModelSet, class Datum, class Data>
-int RANSAC<Model, ModelSet, Datum, Data>::GenerateModel(ModelSet& models, const Data& data)
-{
-    std::set<int> samples;
-    while (samples.size() < toolEstimator->SAMPLE_SIZE)
-        samples.insert(toolUniform(toolGenerator));
-    return toolEstimator->ComputeModel(models, data, samples);
-}
-
-template <class Model, class ModelSet, class Datum, class Data>
-double RANSAC<Model, ModelSet, Datum, Data>::EvaluateModel(const Model& model, const Data& data, int N)
-{
-    double loss = 0;
-    for (int i = 0; i < N; i++)
-    {
-        double error = toolEstimator->ComputeError(model, data[i]);
-        loss += (fabs(error) > paramThreshold);
-    }
-    return loss;
-}
-
-template <class Model, class ModelSet, class Datum, class Data>
-bool RANSAC<Model, ModelSet, Datum, Data>::UpdateBest(Model& bestModel, double& bestCost, const Model& model, double cost)
-{
-    bestModel = model;
-    bestCost = cost;
-    return true;
-}
+}; // End of 'RANSAC'
 
 } // End of 'RTL'
 

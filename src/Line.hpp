@@ -30,24 +30,22 @@ public:
     double a, b, c;
 };
 
-class LineEstimator : public RTL::Estimator<Line, std::vector<Line>, Point, std::vector<Point> >
+class LineEstimator : public RTL::Estimator<Line, Point, std::vector<Point> >
 {
 public:
-    LineEstimator(size_t M = 2) : Estimator(M) { }
-
-    virtual int ComputeModel(ModelSet& models, const Data& data, const std::set<int>& samples)
+    virtual Model ComputeModel(const Data& data, const std::set<int>& samples)
     {
         double meanX = 0, meanY = 0, meanXX = 0, meanYY = 0, meanXY = 0;
-        for (std::set<int>::const_iterator it = samples.begin();it != samples.end(); it++)
+        for (auto itr = samples.begin(); itr != samples.end(); itr++)
         {
-            const Datum& p = data[*it];
+            const Datum& p = data[*itr];
             meanX += p.x;
             meanY += p.y;
             meanXX += p.x * p.x;
             meanYY += p.y * p.y;
             meanXY += p.x * p.y;
         }
-        int M = static_cast<int>(samples.size());
+        size_t M = samples.size();
         meanX /= M;
         meanY /= M;
         meanXX /= M;
@@ -57,7 +55,7 @@ public:
         double b = meanXY - meanX*meanY;
         double d = meanYY - meanY*meanY;
 
-        Model model;
+        Model line;
         if (fabs(b) > DBL_EPSILON)
         {
             // Calculate the first eigen vector of A = [a, b; b, d]
@@ -66,144 +64,83 @@ public:
             double lambda = T2 - sqrt(T2 * T2 - (a * d - b * b));
             double v1 = lambda - d, v2 = b;
             double norm = sqrt(v1 * v1 + v2 * v2);
-            model.a = v1 / norm;
-            model.b = v2 / norm;
+            line.a = v1 / norm;
+            line.b = v2 / norm;
         }
         else
         {
-            model.a = 1;
-            model.b = 0;
+            line.a = 1;
+            line.b = 0;
         }
-        model.c = -model.a * meanX - model.b * meanY;
-        models.push_back(model);
-        return 1;
+        line.c = -line.a * meanX - line.b * meanY;
+        return line;
     }
 
-    virtual double ComputeError(const Model& model, const Datum& datum)
+    virtual double ComputeError(const Model& line, const Datum& point)
     {
-        return fabs(model.a * datum.x + model.b * datum.y + model.c);
+        return line.a * point.x + line.b * point.y + line.c;
     }
 }; // End of 'LineEstimator'
 
 class LineObserver : public RTL::Observer<Line, Point, std::vector<Point> >
 {
 public:
-    LineObserver() : RANGE_MIN(Point(0, 0)), RANGE_MAX(Point(640, 480))
+    LineObserver(Point _max = Point(640, 480), Point _min = Point(0, 0)) : RANGE_MAX(_max), RANGE_MIN(_min) { }
+
+    virtual Data GenerateData(const Model& line, int N, std::vector<int>& inliers, double noise = 0, double ratio = 1)
     {
-    }
+        std::mt19937 generator;
+        std::uniform_real<double> uniform(0, 1);
+        std::normal_distribution<double> normal(0, 1);
 
-    LineObserver(Point _min, Point _max) : RANGE_MIN(_min), RANGE_MAX(_max) { }
-
-    virtual bool GenerateData(Data& data, std::vector<int>& inliers, const Model& model, int N, double noise = 0, double ratio = 1)
-    {
-        std::tr1::mt19937 generator;
-        std::tr1::uniform_real<double> uniform(0, 1);
-        std::tr1::normal_distribution<double> normal(0, 1);
-
-        if (fabs(model.b) > DBL_EPSILON)
+        Data data;
+        if (fabs(line.b) > fabs(line.a))
         {
             for (int i = 0; i < N; i++)
             {
-                Datum datum;
-                datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) + RANGE_MIN.x;
+                Datum point;
+                point.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) + RANGE_MIN.x;
                 double vote = uniform(generator);
                 if (vote > ratio)
                 {
                     // Generate an outlier
-                    datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) + RANGE_MIN.y;
+                    point.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) + RANGE_MIN.y;
                 }
                 else
                 {
                     // Generate an inlier
-                    datum.y = (model.a * datum.x + model.c) / -model.b;
-                    datum.x += noise * normal(generator);
-                    datum.y += noise * normal(generator);
+                    point.y = (line.a * point.x + line.c) / -line.b;
+                    point.x += noise * normal(generator);
+                    point.y += noise * normal(generator);
                     inliers.push_back(i);
                 }
-                data.push_back(datum);
+                data.push_back(point);
             }
         }
         else
         {
             for (int i = 0; i < N; i++)
             {
-                Datum datum;
-                datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) + RANGE_MIN.y;
+                Datum point;
+                point.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) + RANGE_MIN.y;
                 double vote = uniform(generator);
                 if (vote > ratio)
                 {
                     // Generate an outlier
-                    datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) + RANGE_MIN.x;
+                    point.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) + RANGE_MIN.x;
                 }
                 else
                 {
                     // Generate an inlier
-                    datum.x = (model.b * datum.y + model.c) / -model.a;
-                    datum.x += noise * normal(generator);
-                    datum.y += noise * normal(generator);
+                    point.x = (line.b * point.y + line.c) / -line.a;
+                    point.x += noise * normal(generator);
+                    point.y += noise * normal(generator);
                     inliers.push_back(i);
                 }
-                data.push_back(datum);
+                data.push_back(point);
             }
         }
-        return true;
-    }
-
-    virtual bool GenerateData(Data& data, std::vector<bool>& inliers, const Model& model, int N, double noise = 0, double ratio = 1)
-    {
-        std::tr1::mt19937 generator;
-        std::tr1::uniform_real<double> uniform(0, 1);
-        std::tr1::normal_distribution<double> normal(0, 1);
-
-        if (fabs(model.b) > DBL_EPSILON)
-        {
-            for (int i = 0; i < N; i++)
-            {
-                Datum datum;
-                datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) + RANGE_MIN.x;
-                double vote = uniform(generator);
-                if (vote > ratio)
-                {
-                    // Generate an outlier
-                    datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) + RANGE_MIN.y;
-                    inliers.push_back(false);
-                }
-                else
-                {
-                    // Generate an inlier
-                    datum.y = (model.a * datum.x + model.c) / -model.b;
-                    datum.x += noise * normal(generator);
-                    datum.y += noise * normal(generator);
-                    inliers.push_back(true);
-                }
-                data.push_back(datum);
-            }
-        }
-        else
-        {
-            for (int i = 0; i < N; i++)
-            {
-                Datum datum;
-                datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) + RANGE_MIN.y;
-                double vote = uniform(generator);
-                if (vote > ratio)
-                {
-                    // Generate an outlier
-                    datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) + RANGE_MIN.x;
-                    inliers.push_back(false);
-                }
-                else
-                {
-                    // Generate an inlier
-                    datum.x = (model.b * datum.y + model.c) / -model.a;
-                    datum.x += noise * normal(generator);
-                    datum.y += noise * normal(generator);
-                    inliers.push_back(true);
-                }
-                data.push_back(datum);
-            }
-        }
-        return true;
+        return data;
     }
 
     const Point RANGE_MIN;

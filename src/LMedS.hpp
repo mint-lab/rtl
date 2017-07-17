@@ -2,22 +2,23 @@
 #define __RTL_LMEDS__
 
 #include "RANSAC.hpp"
+#include <algorithm>
 
 namespace RTL
 {
 
-template <class ModelT, class ModelSetT, class DatumT, class DataT>
-class LMedS : public RANSAC<ModelT, ModelSetT, DatumT, DataT>
+template <class ModelT, class DatumT, class DataT>
+class LMedS : public RANSAC<ModelT, DatumT, DataT>
 {
 public:
-    LMedS(Estimator<Model, ModelSet, Datum, Data>* estimator) : RANSAC<Model, ModelSet, Datum, Data>(estimator) { }
+    LMedS(Estimator<Model, Datum, Data>* estimator) : RANSAC<Model, Datum, Data>(estimator) { }
 
 protected:
-    virtual inline double EvaluateModel(const Model& model, const Data& data, int N)
+    virtual double EvaluateModel(const Model& model, const Data& data, int N)
     {
         std::vector<double> errors(N);
         for (int i = 0; i < N; i++)
-            errors[i] = toolEstimator->ComputeError(model, data[i]);
+            errors[i] = fabs(toolEstimator->ComputeError(model, data[i]));
         std::nth_element(errors.begin(), errors.begin() + N / 2, errors.end());
         return errors[N / 2];
     }

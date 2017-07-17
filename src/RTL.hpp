@@ -7,8 +7,8 @@
 #include "MSAC.hpp"
 #include "MLESAC.hpp"
 
-#include "Evaluator.hpp"
-
 #include "Line.hpp"
+
+#include "Evaluator.hpp"
 
 #endif // End of '__RTL__'
