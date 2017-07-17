@@ -1,7 +1,6 @@
 #include <iostream>
 #include <iomanip>
-#include "Line.hpp"
-#include "RANSAC.hpp"
+#include "RTL.hpp"
 
 // The main function
 int main(void)
@@ -11,7 +10,7 @@ int main(void)
     std::vector<Point> data;
     std::vector<bool> trueInliers;
     Line trueModel(0.6, -0.8, 1);
-    if (!observer.GenerateData(data, trueInliers, trueModel, 100, 0.1, 0.5)) return -1;
+    if (!observer.GenerateData(data, trueInliers, trueModel, 100, 0.1, 0.6)) return -1;
 
     // Find the best model using RANSAC
     LineEstimator estimator;
@@ -43,7 +42,7 @@ int main(void)
 		std::cout << std::endl;
 	}
 
-	std::cout.flags(original_flags);                              //6
+	std::cout.flags(original_flags);
 
 	// Print the result
     std::cout << "- True Model:  " << trueModel << std::endl;

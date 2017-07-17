@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleLineFitting", "ExampleLineFitting\ExampleLineFitting.vcxproj", "{8ACE42D9-0F72-471F-94E8-E252BB55C0C0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EvaluateLineFitting", "EvaluateLineFitting\EvaluateLineFitting.vcxproj", "{6FD9D438-A0B5-4606-B56F-DD76E952740C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8ACE42D9-0F72-471F-94E8-E252BB55C0C0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8ACE42D9-0F72-471F-94E8-E252BB55C0C0}.Debug|Win32.Build.0 = Debug|Win32
+		{8ACE42D9-0F72-471F-94E8-E252BB55C0C0}.Release|Win32.ActiveCfg = Release|Win32
+		{8ACE42D9-0F72-471F-94E8-E252BB55C0C0}.Release|Win32.Build.0 = Release|Win32
+		{6FD9D438-A0B5-4606-B56F-DD76E952740C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6FD9D438-A0B5-4606-B56F-DD76E952740C}.Debug|Win32.Build.0 = Debug|Win32
+		{6FD9D438-A0B5-4606-B56F-DD76E952740C}.Release|Win32.ActiveCfg = Release|Win32
+		{6FD9D438-A0B5-4606-B56F-DD76E952740C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -54,13 +54,13 @@ protected:
 
     virtual inline bool UpdateBest(Model& bestModel, double& bestCost, const Model& model, double cost);
 
-    virtual inline void Initialize(const Data& data, int N) { toolUniform = std::tr1::uniform_int<int>(0, N - 1); }
+    virtual inline void Initialize(const Data& data, int N) { toolUniform = std::uniform_int<int>(0, N - 1); }
 
     virtual inline void Terminate(const Data& data, int N, const Model& bestModel) { }
 
-    std::tr1::mt19937 toolGenerator;
+    std::mt19937 toolGenerator;
 
-    std::tr1::uniform_int<int> toolUniform;
+    std::uniform_int<int> toolUniform;
 
     Estimator<Model, ModelSet, Datum, Data>* toolEstimator;
 
@@ -126,9 +126,9 @@ double RANSAC<Model, ModelSet, Datum, Data>::FindBest(Model& best, const Data& d
         // 2. Evaluate the hypotheses
         for (int i = 0; i < num; i++)
         {
-            double modelloss = EvaluateModel(models[i], data, N);
-            if (modelloss < bestloss)
-                if (!UpdateBest(best, bestloss, models[i], modelloss))
+            double loss = EvaluateModel(models[i], data, N);
+            if (loss < bestloss)
+                if (!UpdateBest(best, bestloss, models[i], loss))
                     goto RANSAC_FIND_BEST_EXIT;
         }
     }

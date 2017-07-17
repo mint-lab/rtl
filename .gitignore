@@ -1,3 +1,10 @@
-
-/build/MSVC9/EvaluateLineFitting/Debug
-/build/MSVC9/ExampleLineFitting/Debug
+Debug
+Release
+ipch
+*.exe
+*.dll
+*.ilk
+*.pdb
+*.aps
+*.suo
+*.sdf

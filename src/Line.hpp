@@ -105,12 +105,12 @@ public:
             for (int i = 0; i < N; i++)
             {
                 Datum datum;
-                datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) - RANGE_MIN.x;
+                datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) + RANGE_MIN.x;
                 double vote = uniform(generator);
                 if (vote > ratio)
                 {
                     // Generate an outlier
-                    datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) - RANGE_MIN.y;
+                    datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) + RANGE_MIN.y;
                 }
                 else
                 {
@@ -128,12 +128,12 @@ public:
             for (int i = 0; i < N; i++)
             {
                 Datum datum;
-                datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) - RANGE_MIN.y;
+                datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) + RANGE_MIN.y;
                 double vote = uniform(generator);
                 if (vote > ratio)
                 {
                     // Generate an outlier
-                    datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) - RANGE_MIN.x;
+                    datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) + RANGE_MIN.x;
                 }
                 else
                 {
@@ -160,12 +160,12 @@ public:
             for (int i = 0; i < N; i++)
             {
                 Datum datum;
-                datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) - RANGE_MIN.x;
+                datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) + RANGE_MIN.x;
                 double vote = uniform(generator);
                 if (vote > ratio)
                 {
                     // Generate an outlier
-                    datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) - RANGE_MIN.y;
+                    datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) + RANGE_MIN.y;
                     inliers.push_back(false);
                 }
                 else
@@ -184,12 +184,12 @@ public:
             for (int i = 0; i < N; i++)
             {
                 Datum datum;
-                datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) - RANGE_MIN.y;
+                datum.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) + RANGE_MIN.y;
                 double vote = uniform(generator);
                 if (vote > ratio)
                 {
                     // Generate an outlier
-                    datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) - RANGE_MIN.x;
+                    datum.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) + RANGE_MIN.x;
                     inliers.push_back(false);
                 }
                 else
