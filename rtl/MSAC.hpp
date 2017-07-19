@@ -6,8 +6,8 @@
 namespace RTL
 {
 
-template <class ModelT, class DatumT, class DataT>
-class MSAC : public RANSAC<ModelT, DatumT, DataT>
+template <class Model, class Datum, class Data>
+class MSAC : virtual public RANSAC<Model, Datum, Data>
 {
 public:
     MSAC(Estimator<Model, Datum, Data>* estimator) : RANSAC<Model, Datum, Data>(estimator) { }

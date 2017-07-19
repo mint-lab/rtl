@@ -9,16 +9,10 @@
 namespace RTL
 {
 
-template <class ModelT, class DatumT, class DataT>
+template <class Model, class Datum, class Data>
 class RANSAC
 {
 public:
-    typedef ModelT                      Model;
-
-    typedef DatumT                      Datum;
-
-    typedef DataT                       Data;
-
     RANSAC(Estimator<Model, Datum, Data>* estimator)
     {
         assert(estimator != NULL);
@@ -104,13 +98,13 @@ protected:
         return true;
     }
 
-    virtual void Initialize(const Data& data, int N) { toolUniform = std::uniform_int<int>(0, N - 1); }
+    virtual void Initialize(const Data& data, int N) { toolUniform = std::uniform_int_distribution<int>(0, N - 1); }
 
     virtual void Terminate(const Model& bestModel, const Data& data, int N) { }
 
     std::mt19937 toolGenerator;
 
-    std::uniform_int<int> toolUniform;
+    std::uniform_int_distribution<int> toolUniform;
 
     Estimator<Model, Datum, Data>* toolEstimator;
 

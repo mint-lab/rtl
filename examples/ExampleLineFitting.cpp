@@ -22,7 +22,7 @@ int main(void)
     // Determine inliers using the best model if necessary
     vector<int> inliers = ransac.FindInliers(model, data, data.size());
 
-	// Print the result
+    // Print the result
     cout << "- True Model:  " << trueModel << endl;
     cout << "- Found Model: " << model << " (Loss: " << loss << ")" << endl;
     cout << "- The Number of Inliers: " << inliers.size() << " (N: " << data.size() << ")" << endl;

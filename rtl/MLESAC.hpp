@@ -10,11 +10,11 @@
 namespace RTL
 {
 
-template <class ModelT, class DatumT, class DataT>
-class MLESAC : public MSAC<ModelT, DatumT, DataT>
+template <class Model, class Datum, class Data>
+class MLESAC : virtual public RANSAC<Model, Datum, Data>
 {
 public:
-    MLESAC(Estimator<Model, Datum, Data>* estimator) : MSAC<Model, Datum, Data>(estimator)
+    MLESAC(Estimator<Model, Datum, Data>* estimator) : RANSAC<Model, Datum, Data>(estimator)
     {
         dataError2 = NULL;
         SetParamIterationEM();
@@ -32,7 +32,7 @@ public:
 protected:
     virtual void Initialize(const Data& data, int N)
     {
-        MSAC::Initialize(data, N);
+        RANSAC::Initialize(data, N);
         dataError2 = new double[N];
         assert(dataError2 != NULL);
         double sigma = paramThreshold / paramSigmaScale;
@@ -86,7 +86,7 @@ protected:
             delete [] dataError2;
             dataError2 = NULL;
         }
-        MSAC::Terminate(bestModel, data, N);
+        RANSAC::Terminate(bestModel, data, N);
     }
 
     int paramIterationEM;

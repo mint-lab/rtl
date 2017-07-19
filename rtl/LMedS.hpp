@@ -7,8 +7,8 @@
 namespace RTL
 {
 
-template <class ModelT, class DatumT, class DataT>
-class LMedS : public RANSAC<ModelT, DatumT, DataT>
+template <class Model, class Datum, class Data>
+class LMedS : virtual public RANSAC<Model, Datum, Data>
 {
 public:
     LMedS(Estimator<Model, Datum, Data>* estimator) : RANSAC<Model, Datum, Data>(estimator) { }

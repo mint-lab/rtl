@@ -10,7 +10,7 @@ class Point
 {
 public:
     Point() : x(0), y(0) { }
-    
+
     Point(double _x, double _y) : x(_x), y(_y) { }
 
     friend std::ostream& operator<<(std::ostream& out, const Point& p) { return out << p.x << ", " << p.y; }
@@ -30,15 +30,15 @@ public:
     double a, b, c;
 };
 
-class LineEstimator : public RTL::Estimator<Line, Point, std::vector<Point> >
+class LineEstimator : virtual public RTL::Estimator<Line, Point, std::vector<Point> >
 {
 public:
-    virtual Model ComputeModel(const Data& data, const std::set<int>& samples)
+    virtual Line ComputeModel(const std::vector<Point>& data, const std::set<int>& samples)
     {
         double meanX = 0, meanY = 0, meanXX = 0, meanYY = 0, meanXY = 0;
         for (auto itr = samples.begin(); itr != samples.end(); itr++)
         {
-            const Datum& p = data[*itr];
+            const Point& p = data[*itr];
             meanX += p.x;
             meanY += p.y;
             meanXX += p.x * p.x;
@@ -51,11 +51,11 @@ public:
         meanXX /= M;
         meanYY /= M;
         meanXY /= M;
-        double a = meanXX - meanX*meanX;
-        double b = meanXY - meanX*meanY;
-        double d = meanYY - meanY*meanY;
+        double a = meanXX - meanX * meanX;
+        double b = meanXY - meanX * meanY;
+        double d = meanYY - meanY * meanY;
 
-        Model line;
+        Line line;
         if (fabs(b) > DBL_EPSILON)
         {
             // Calculate the first eigen vector of A = [a, b; b, d]
@@ -76,29 +76,29 @@ public:
         return line;
     }
 
-    virtual double ComputeError(const Model& line, const Datum& point)
+    virtual double ComputeError(const Line& line, const Point& point)
     {
         return line.a * point.x + line.b * point.y + line.c;
     }
 }; // End of 'LineEstimator'
 
-class LineObserver : public RTL::Observer<Line, Point, std::vector<Point> >
+class LineObserver : virtual public RTL::Observer<Line, Point, std::vector<Point> >
 {
 public:
     LineObserver(Point _max = Point(640, 480), Point _min = Point(0, 0)) : RANGE_MAX(_max), RANGE_MIN(_min) { }
 
-    virtual Data GenerateData(const Model& line, int N, std::vector<int>& inliers, double noise = 0, double ratio = 1)
+    virtual std::vector<Point> GenerateData(const Line& line, int N, std::vector<int>& inliers, double noise = 0, double ratio = 1)
     {
         std::mt19937 generator;
-        std::uniform_real<double> uniform(0, 1);
+        std::uniform_real_distribution<double> uniform(0, 1);
         std::normal_distribution<double> normal(0, 1);
 
-        Data data;
+        std::vector<Point> data;
         if (fabs(line.b) > fabs(line.a))
         {
             for (int i = 0; i < N; i++)
             {
-                Datum point;
+                Point point;
                 point.x = (RANGE_MAX.x - RANGE_MIN.x) * uniform(generator) + RANGE_MIN.x;
                 double vote = uniform(generator);
                 if (vote > ratio)
@@ -121,7 +121,7 @@ public:
         {
             for (int i = 0; i < N; i++)
             {
-                Datum point;
+                Point point;
                 point.y = (RANGE_MAX.y - RANGE_MIN.y) * uniform(generator) + RANGE_MIN.y;
                 double vote = uniform(generator);
                 if (vote > ratio)

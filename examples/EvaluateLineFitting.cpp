@@ -75,11 +75,11 @@ RUN_RANDOM_EXP_FAIL:
 int main(void)
 {
     // Configure experiments
-    const Line   CONFIG_MODEL_TRUTH (0.6, 0.8, -300);
-    const ExpVar CONFIG_EXP_DEFAULT ( 200, 0.6, 0.5);
-    const ExpVar CONFIG_EXP_MIN     ( 100, 0.2, 0.1);
-    const ExpVar CONFIG_EXP_MAX     (1000, 2.0, 0.9);
-    const ExpVar CONFIG_EXP_STEP    ( 100, 0.2, 0.1);
+    const Line   CONFIG_MODEL_TRUTH(0.6, 0.8, -300);
+    const ExpVar CONFIG_EXP_DEFAULT(200, 0.6, 0.5);
+    const ExpVar CONFIG_EXP_MIN(100, 0.2, 0.1);
+    const ExpVar CONFIG_EXP_MAX(1000, 2.0, 0.9);
+    const ExpVar CONFIG_EXP_STEP(100, 0.2, 0.1);
     const int    CONFIG_EXP_TRIAL = 1000;
     const char*  CONFIG_EXP_NAME1 = "LineRandom(DataNum).csv";
     const char*  CONFIG_EXP_NAME2 = "LineRandom(NoiseLevel).csv";

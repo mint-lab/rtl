@@ -3,11 +3,7 @@
 
 #include "Base.hpp"
 #include <algorithm>
-#ifdef _WIN32
-#   include <windows.h>
-#else
-#   include <sys/time.h>
-#endif
+#include <chrono>
 
 class Score
 {
@@ -23,16 +19,10 @@ public:
     int fn;
 };
 
-template <class ModelT, class DatumT, class DataT>
+template <class Model, class Datum, class Data>
 class Evaluator
 {
 public:
-    typedef ModelT                      Model;
-
-    typedef DatumT                      Datum;
-
-    typedef DataT                       Data;
-
     Evaluator(RTL::Estimator<Model, Datum, Data>* estimator)
     {
         assert(estimator != NULL);
@@ -105,48 +95,24 @@ class StopWatch
 public:
     StopWatch()
     {
-#ifdef _WIN32
-        ::QueryPerformanceFrequency((LARGE_INTEGER*)&freq);
-        ::QueryPerformanceCounter((LARGE_INTEGER*)&start);
-#else
-        start.tv_sec = start.tv_usec = 0;
-        gettimeofday(&start, NULL);
-#endif
+        Start();
     }
 
     bool Start(void)
     {
-#ifdef _WIN32
-        ::QueryPerformanceCounter((LARGE_INTEGER*)&start);
+        start = std::chrono::high_resolution_clock::now();
         return true;
-#else
-        gettimeofday(&start, NULL);
-#endif
     }
 
     double GetElapse(void)
     {
-#ifdef _WIN32
-        assert(freq.QuadPart != 0);
-        LARGE_INTEGER finish;
-        ::QueryPerformanceCounter((LARGE_INTEGER*)&finish);
-        return (static_cast<double>(finish.QuadPart - start.QuadPart) / freq.QuadPart);
-#else
-        struct timeval finish;
-        gettimeofday(&finish, NULL);
-        return (finish.tv_sec - start.tv_sec + static_cast<double>(finish.tv_usec - start.tv_usec) / 1000000);
-
-#endif
+        std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
+        return static_cast<double>(time_span.count());
     }
 
 private:
-#ifdef _WIN32
-    LARGE_INTEGER freq;
-
-    LARGE_INTEGER start;
-#else
-    struct timeval start;
-#endif
+    std::chrono::high_resolution_clock::time_point start;
 };
 
 #endif // End of '__RTL_EVALUATOR__'
